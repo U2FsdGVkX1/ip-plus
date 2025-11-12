@@ -61,14 +61,17 @@ func formatLocation(loc *qqwry.Location) string {
 	// Priority: Country + Province + City
 	parts := []string{}
 
-	if loc.Country != "" && loc.Country != "0" {
-		parts = append(parts, loc.Country)
-	}
 	if loc.Province != "" && loc.Province != "0" {
 		parts = append(parts, loc.Province)
 	}
 	if loc.City != "" && loc.City != "0" {
 		parts = append(parts, loc.City)
+	}
+	if loc.District != "" && loc.District != "0" {
+		parts = append(parts, loc.District)
+	}
+	if loc.ISP != "" && loc.ISP != "0" {
+		parts = append(parts, loc.ISP)
 	}
 
 	if len(parts) == 0 {
