@@ -1,0 +1,121 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+          - goos: windows
+            goarch: arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          output="ip-${{ matrix.goos }}-${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            output="${output}.exe"
+          fi
+          go build -ldflags="-s -w" -o "${output}" .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ip-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ip-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release files
+        run: |
+          mkdir -p release
+          find artifacts -type f -exec mv {} release/ \;
+          cd release
+          sha256sum ip-* > checksums.txt
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## IP Location Wrapper ${{ steps.version.outputs.VERSION }}
+
+            A command wrapper that automatically annotates IP addresses with their geographic locations.
+
+            ### Downloads
+
+            Choose the appropriate binary for your platform:
+
+            - **Linux AMD64**: `ip-linux-amd64`
+            - **Linux ARM64**: `ip-linux-arm64`
+            - **macOS Intel**: `ip-darwin-amd64`
+            - **macOS Apple Silicon**: `ip-darwin-arm64`
+            - **Windows AMD64**: `ip-windows-amd64.exe`
+            - **Windows ARM64**: `ip-windows-arm64.exe`
+
+            ### Usage
+
+            ```bash
+            # Make executable (Linux/macOS)
+            chmod +x ip-linux-amd64
+
+            # Run
+            ./ip-linux-amd64 ss -nltp
+            ./ip-linux-amd64 netstat -tunlp
+            ./ip-linux-amd64 echo "Test: 8.8.8.8"
+            ```
+
+            ### Verification
+
+            Verify download integrity using `checksums.txt`:
+            ```bash
+            sha256sum -c checksums.txt
+            ```
+          files: release/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

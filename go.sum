@@ -1,0 +1,6 @@
+github.com/ipipdotnet/ipdb-go v1.3.3 h1:GLSAW9ypLUd6EF9QNK2Uhxew9Jzs4XMJ9gOZEFnJm7U=
+github.com/ipipdotnet/ipdb-go v1.3.3/go.mod h1:yZ+8puwe3R37a/3qRftXo40nZVQbxYDLqls9o5foexs=
+github.com/xiaoqidun/qqwry v0.0.0-20250915110312-1dd385f77d98 h1:QzgLYAAaqALDmu1kCWITNzV38QvDL4HAWRAT/U7Mv2Y=
+github.com/xiaoqidun/qqwry v0.0.0-20250915110312-1dd385f77d98/go.mod h1:hFWQBkHuMn+7Mt/J98d1V3WHgbTPMbbfUaRpw20Tuzo=
+golang.org/x/text v0.29.0 h1:1neNs90w9YzJ9BocxfsQNHKuAT4pkghyXc4nhZ6sJvk=
+golang.org/x/text v0.29.0/go.mod h1:7MhJOA9CD2qZyOKYazxdYMF85OwPdEr9jTtBpO7ydH4=

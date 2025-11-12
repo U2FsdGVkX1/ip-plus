@@ -1,0 +1,31 @@
+# Binaries
+main
+ip
+ip-*
+*.exe
+
+# IP database
+qqwry.ipdb
+*.ipdb
+
+# Go build artifacts
+*.o
+*.a
+*.so
+
+# Test binaries
+*.test
+
+# Go workspace file
+go.work
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
